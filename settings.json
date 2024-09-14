@@ -1,0 +1,12 @@
+{
+    "max_rec_sec": 300.0,
+    "min_rec_sec": 0.3,
+    "input_device_idx": 1,
+    "comport": "COM12",
+    "civ_addr": "a4",
+    "callsign_pronuc" : "ワン ツー スリー フォー ファイブ シックス",
+    "my_callsign" : "123456 F",
+    "my_callsign_memo": "AUTO",
+    "rpt1_callsign" : "123456 Z",
+    "rpt2_callsign": "123456 G"
+}
