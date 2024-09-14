@@ -1,7 +1,5 @@
 # D-STAR の自動応答局の『中の人』をAIにやってもらおう！
 
-<img src="https://github.com/7m4mon/dstar_auto_ai_replyer/blob/main/dstar_auto_ai_replyer_image.png" alt="" title="">   
-
 [![](https://img.youtube.com/vi/drTdQaDbe1g/0.jpg)](https://www.youtube.com/watch?v=drTdQaDbe1g)
 
 * 有効なアマチュア無線局の免許で、D-STARのユーザー登録を済ませます。
