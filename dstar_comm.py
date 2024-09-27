@@ -1,9 +1,4 @@
 '''
-D-STARの自動応答局で使用する無線機制御プログラムです。
-dstar_auto_ai_replyer.py から呼び出されます。
-IC-705とIC-9700で動作確認しています。
-date: 2024.9
-author: 7M4MON
 '''
 
 import serial, time
@@ -29,12 +24,12 @@ CIV_WAIT_TIME = 0.02
 DEBUG = False
 
 # 文字列を 8文字 (or 任意数) に調整する
-def pad_or_trim_string(s, length = 8):
+def pad_or_trim_string(s:str = "", length = 8):
     return s.ljust(length)[:length]
 
 # 特定の文字列の次の文字列を文字数分返す
 # USBエコーバック ON/OFF で バイトの位置が変わるため。
-def find_next_chars(s:str, target:str, offset:int = 0, length:int = 2):
+def find_next_chars(s:str = "", target:str = "", offset:int = 0, length:int = 2):
     # 対象文字列が存在する位置を探す
     index = s.find(target)
     if DEBUG:
@@ -48,10 +43,10 @@ def find_next_chars(s:str, target:str, offset:int = 0, length:int = 2):
         return r
     else:
         print('fnc not found')
-        return None
+        return ""
 
 # hexの文字列からasciiの文字列に変換する
-def convert_string_to_ascii(s:str):
+def convert_string_to_ascii(s:str = ""):
     try:
         # ステップ1: 文字列 "3130" を byte 型に変換 (16進数の文字列として)
         byte_data = bytes.fromhex(s)
@@ -63,7 +58,7 @@ def convert_string_to_ascii(s:str):
     except Exception as e: # ascii の範囲外があるのでcatchする
         print('s:' + s)
         print(f"ascii convert error : {e}")
-        return None
+        return ""
 
 # 自局のコールサイン MY + MEMO をセットする
 def set_my_callsign(ser:serial, my_callsign = MY_CALLSIGN, my_callsign_memo = '    ', civ_addr = CIV_ADDR):
@@ -107,7 +102,7 @@ def get_rx_callsign(ser:serial, civ_addr = CIV_ADDR):
     read_data = ser.read_all() 
     #print('rx:' + read_data.hex())
     rx_callsign = convert_string_to_ascii(find_next_chars(read_data.hex(), CMD_PC_ADDR + civ_addr + CMD_LASTRX, 4, 16))
-    if rx_callsign != None:
+    if rx_callsign != "":
         print ("RX_CALLSIGN:" + rx_callsign)
         return rx_callsign
     else:

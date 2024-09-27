@@ -7,7 +7,7 @@ Author: 7M4MON
 Date: 2024/10/1 初版
 '''
 
-import pyaudio, wave, serial, time, json, os, dstar_comm, openai_function
+import pyaudio, wave, serial, time, json, os, dstar_comm, openai_function, subprocess
 from datetime import datetime
 from pydub import AudioSegment
 from pydub.playback import play
@@ -101,39 +101,47 @@ def auto_replyer():
                 wave_file_name = save_wave_file(frames, file_name)
 
                 # wisperに渡して文字起こしする
-                what_rx = openai_function.speech_to_text(client, wave_file_name)
-                print("what_say:" + what_rx)
-                rxTxtFilename = file_name + "_rx.txt" # ログを記録
-                with open(rxTxtFilename, 'w') as f:
-                    f.write(what_rx)
+                try:
+                    what_rx = openai_function.speech_to_text(client, wave_file_name)
+                    print("what_say:" + what_rx)
+                    rxTxtFilename = file_name + "_rx.txt" # ログを記録
+                    with open(rxTxtFilename, 'w') as f:
+                        f.write(what_rx)
 
-                # 文字起こしした内容を ChatGPT に渡す
-                what_tx = openai_function.chat_with_gpt(client, mycallsign = callsign_pronuc, prompt = what_rx)
-                print("reply:" + what_tx)
-                txTxtFilename = file_name + "_tx.txt" # ログを記録
-                with open(txTxtFilename, 'w') as f:
-                    f.write(what_tx)
+                    # 文字起こしした内容を ChatGPT に渡す
+                    what_tx = openai_function.chat_with_gpt(client, mycallsign = callsign_pronuc, prompt = what_rx)
+                    print("reply:" + what_tx)
+                    txTxtFilename = file_name + "_tx.txt" # ログを記録
+                    with open(txTxtFilename, 'w') as f:
+                        f.write(what_tx)
+                except Exception as e:
+                    print("AIE" + str(e))
+                    what_tx = "エラーが発生しました。"
 
-                # 無線機から直前に受信したコールサインを取得する
-                rx_callsign = dstar_comm.get_rx_callsign(ser, civ_addr)
-                dstar_comm.set_ur_callsign(ser, ur_callsign = rx_callsign, rpt1_callsign = rpt1_callsign, rpt2_callsign = rpt2_callsign, civ_addr = civ_addr)
-        
-                # レスポンスの音声ファイルを作成
-                tx_mp3_filename = file_name + "_tx.mp3"
-                reply = get_string_before_space(rx_callsign) + "局" + "、こんにちは。" + "こちらは " + callsign_pronuc + "です。" + what_tx
-                openai_function.make_response_voice(client, reply, tx_mp3_filename)
+                try:
+                    # 無線機から直前に受信したコールサインを取得する
+                    rx_callsign = dstar_comm.get_rx_callsign(ser, civ_addr)
+                    dstar_comm.set_ur_callsign(ser, ur_callsign = rx_callsign, rpt1_callsign = rpt1_callsign, rpt2_callsign = rpt2_callsign, civ_addr = civ_addr)
+            
+                    # レスポンスの音声ファイルを作成
+                    tx_mp3_filename = file_name + '_' + rx_callsign +"_tx.mp3"
+                    reply = get_string_before_space(rx_callsign) + "局" + "、こんにちは。" + "こちらは " + callsign_pronuc + "です。" + what_tx
+                    openai_function.make_response_voice(client, reply, tx_mp3_filename)
 
-                # 送信開始
-                dstar_comm.set_transmit(ser, tx = True,  civ_addr = civ_addr)
-                time.sleep(0.3)
-                # MP3ファイルを読み込んで再生
-                sound = AudioSegment.from_mp3(tx_mp3_filename)
-                play(sound)
-                # 送信停止
-                time.sleep(0.3)
-                dstar_comm.set_transmit(ser, tx = False,  civ_addr = civ_addr)
-
+                    # 送信開始
+                    dstar_comm.set_transmit(ser, tx = True,  civ_addr = civ_addr)
+                    time.sleep(0.3)
+                    # MP3ファイルを読み込んで再生
+                    sound = AudioSegment.from_mp3(tx_mp3_filename)
+                    play(sound)
+                    # 送信停止
+                    time.sleep(0.3)
+                    dstar_comm.set_transmit(ser, tx = False,  civ_addr = civ_addr)
+                except Exception as e:
+                    print("TRE " + str(e))
+                          
     except KeyboardInterrupt:
+        print("KeyboardInterrupt")
         pass
 
     except Exception as e:
@@ -142,6 +150,9 @@ def auto_replyer():
     finally:
         audio.terminate()
         ser.close()
+        with open('log.txt', 'a') as f:
+            print(datetime.now().strftime('%Y%m%d-%H%M%S'), file=f)
+        subprocess.Popen("restart.bat")        # 10秒で再起動する。
         # end of receive()
 
 
