@@ -9,3 +9,7 @@
 * settings.json を環境に応じて書き換え、プログラムを実行します。
 
 <img src="https://github.com/7m4mon/dstar_auto_ai_replyer/blob/main/flow_chart.png" alt="" title="">   
+
+---
+
+[D-STAR の自動応答局の『中の人』をAIにやってもらおう！](https://www.fbnews.jp/202410/special/ "")
