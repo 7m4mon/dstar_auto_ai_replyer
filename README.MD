@@ -8,7 +8,7 @@
 * 変調入力(DATA OFF) を USB に設定します。
 * settings.json を環境に応じて書き換え、プログラムを実行します。
 
-<img src="https://github.com/7m4mon/dstar_auto_ai_replyer/blob/main/flow_chart.png" alt="" title="">   
+<img src="https://github.com/7m4mon/dstar_auto_ai_replyer/blob/main/flow_chart1.png" alt="" title="">   
 
 ---
 
